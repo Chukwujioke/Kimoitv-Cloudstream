@@ -1,0 +1,11 @@
+cloudstream {
+    language = "en"
+    description = "KimoiTV provider"
+    authors = listOf("Kimoitv")
+    status = 1
+    tvTypes = listOf(
+        "Movie",
+        "TvSeries",
+        "Anime"
+    )
+}
