@@ -1,0 +1,84 @@
+import com.android.build.gradle.BaseExtension
+import com.lagradost.cloudstream3.gradle.CloudstreamExtension
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+        maven("https://jitpack.io")
+    }
+
+    dependencies {
+        classpath("com.android.tools.build:gradle:8.7.3")
+        classpath("com.github.recloudstream:gradle:-SNAPSHOT")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.3.0")
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        maven("https://jitpack.io")
+    }
+}
+
+fun Project.cloudstream(
+    configuration: CloudstreamExtension.() -> Unit
+) = extensions.getByName<CloudstreamExtension>(
+    "cloudstream"
+).configuration()
+
+fun Project.android(
+    configuration: BaseExtension.() -> Unit
+) = extensions.getByName<BaseExtension>("android")
+    .configuration()
+
+subprojects {
+    apply(plugin = "com.android.library")
+    apply(plugin = "kotlin-android")
+    apply(plugin = "com.lagradost.cloudstream3.gradle")
+
+    cloudstream {
+        setRepo(
+            System.getenv("GITHUB_REPOSITORY")
+                ?: "yourusername/Kimoitv-Cloudstream"
+        )
+    }
+
+    android {
+        namespace = "com.kimoitv"
+        compileSdkVersion(35)
+
+        defaultConfig {
+            minSdk = 21
+            targetSdk = 35
+        }
+
+        compileOptions {
+            sourceCompatibility = JavaVersion.VERSION_1_8
+            targetCompatibility = JavaVersion.VERSION_1_8
+        }
+    }
+
+    dependencies {
+        add(
+            "implementation",
+            "com.github.recloudstream.cloudstream:library:-SNAPSHOT"
+        )
+        add("implementation", kotlin("stdlib"))
+        add(
+            "implementation",
+            "com.github.Blatzar:NiceHttp:0.4.11"
+        )
+        add("implementation", "org.jsoup:jsoup:1.18.3")
+        add(
+            "implementation",
+            "com.fasterxml.jackson.module:jackson-module-kotlin:2.13.1"
+        )
+    }
+}
+
+tasks.register<Delete>("clean") {
+    delete(layout.buildDirectory)
+}
